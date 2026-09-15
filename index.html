@@ -61,6 +61,12 @@ a.card:hover{transform:translateY(-2px); border-color:var(--accent)}
 .badge.pub{background:rgba(34,197,94,.12); color:var(--accent2); border:1px solid rgba(34,197,94,.3)}
 .badge.link{border:1px solid var(--accent); color:var(--accent); padding:4px 9px; border-radius:8px; align-self:flex-start}
 .badge.link:hover{background:rgba(79,140,255,.12)}
+.enlaces{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
+.enlaces a{
+  font-size:.84rem; font-weight:600; text-decoration:none; color:#fff;
+  background:var(--accent); border-radius:9px; padding:9px 13px;
+}
+.enlaces a.alt{background:#1e2430; color:var(--tx); border:1px solid var(--line)}
 footer{text-align:center; color:var(--mut); font-size:.75rem; padding:24px}
 </style>
 </head>
@@ -76,6 +82,35 @@ footer{text-align:center; color:var(--mut); font-size:.75rem; padding:24px}
     <h2>📚 Repositorios <span class="count" id="repo-count"></span></h2>
     <div class="grid" id="repos"></div>
   </section>
+
+  <section>
+    <h2>🔗 Servidor maestro · datos en tiempo real</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="top"><h3>♟️ webapp_redis (info64 en vivo)</h3></div>
+        <p>Servidor maestro con los torneos de ajedrez de info64.org en tiempo real. La app Android consume de aquí vía API. Requiere estar en la red Tailscale o en la misma LAN.</p>
+        <div class="enlaces">
+          <a href="http://100.118.45.14:5000">Abrir (Tailscale) ↗</a>
+          <a class="alt" href="http://192.168.1.113:5000">Abrir (LAN) ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="top"><h3>📡 API para la app Android</h3></div>
+        <p>Endpoints que consume la app <code>TorneosAjedrez</code> para descargar los datos en tiempo real:</p>
+        <code>GET /tournaments<br>GET /tournaments/detail/0</code>
+        <div class="enlaces">
+          <a class="alt" href="http://100.118.45.14:5000/tournaments">Ver /tournaments ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="top"><h3>🌐 Panel de servicios</h3></div>
+        <p>Acceso al resto de servicios del servidor (Home Assistant, AdGuard, MediaServer, noVNC).</p>
+        <div class="enlaces">
+          <a href="http://100.118.45.14:8080">Abrir panel ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>finocente · laboratorio de programación</footer>
@@ -86,10 +121,7 @@ const REPOS = [
   { name:"Grua", desc:"Proyecto de grúa / brazo robótico.", lang:"", priv:true },
   { name:"compose-app", desc:"App Android con Jetpack Compose.", lang:"Kotlin", priv:false },
   { name:"composeTermux", desc:"App Android con Compose para Termux.", lang:"Kotlin", priv:false },
-  { name:"torneo-compose", desc:"Gestor de torneos con Jetpack Compose.", lang:"", priv:false },
-  { name:"TorneosAjedrez", desc:"Web para torneos de ajedrez.", lang:"HTML", priv:false },
   { name:"ApiRestPython", desc:"API REST de datos HTML con Python.", lang:"", priv:true },
-  { name:"fastapifirebase", desc:"Backend FastAPI integrado con Firebase.", lang:"", priv:false },
   { name:"finocente.github.io", desc:"Este sitio: laboratorio de programación.", lang:"HTML", priv:false },
   { name:"Programacion", desc:"Proyectos y ejercicios de programación.", lang:"Python", priv:true },
   { name:"gui", desc:"Pruebas de interfaces gráficas (GUI).", lang:"", priv:true },
