@@ -3,155 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>finocente · Laboratorio de Programación</title>
-<meta name="description" content="Repositorios y proyectos de programación de finocente.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+<meta http-equiv="refresh" content="0; url=http://100.118.45.14:5000">
+<title>finocente · redirigiendo a webapp_redis</title>
+<script>location.replace("http://100.118.45.14:5000");</script>
 <style>
-:root{
-  --bg:#0f1115; --card:#171a21; --line:#232834;
-  --tx:#e6e9ef; --mut:#8b93a3;
-  --accent:#4f8cff; --accent2:#22c55e; --warn:#f59e0b;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:var(--bg); color:var(--tx);
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  min-height:100vh;
-}
-header{
-  padding:40px 20px 12px; text-align:center;
-  border-bottom:1px solid var(--line);
-  background:radial-gradient(600px 200px at 50% -40px, rgba(79,140,255,.15), transparent);
-}
-header .logo{font-size:2.4rem}
-header h1{font-size:1.6rem; letter-spacing:.5px; margin-top:6px}
-header h1 span{color:var(--accent)}
-header p{color:var(--mut); margin-top:8px; font-size:.92rem}
-main{max-width:960px; margin:0 auto; padding:28px 16px 70px}
-section h2{
-  font-size:.95rem; text-transform:uppercase; letter-spacing:2px;
-  color:var(--mut); margin-bottom:14px; display:flex; align-items:center; gap:8px;
-}
-.count{
-  font-size:.72rem; background:#1e2430; color:var(--tx);
-  padding:2px 8px; border-radius:20px; letter-spacing:0;
-}
-.grid{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:14px;
-}
-.card{
-  background:var(--card); border:1px solid var(--line); border-radius:14px;
-  padding:18px; display:flex; flex-direction:column; gap:9px;
-  text-decoration:none; color:inherit;
-  transition:transform .15s ease, border-color .15s ease;
-}
-a.card:hover{transform:translateY(-2px); border-color:var(--accent)}
-.card .top{display:flex; align-items:center; justify-content:space-between; gap:8px}
-.card h3{font-size:1rem; word-break:break-all; color:var(--tx)}
-.card p{color:var(--mut); font-size:.84rem; line-height:1.45; flex:1}
-.badges{display:flex; gap:6px; flex-wrap:wrap}
-.badge{
-  font-size:.68rem; font-weight:600; padding:3px 8px; border-radius:20px;
-  display:inline-flex; align-items:center; gap:4px;
-}
-.badge.lang{background:#0d1014; border:1px solid var(--line); color:var(--mut)}
-.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);display:inline-block}
-.badge.priv{background:rgba(245,158,11,.12); color:var(--warn); border:1px solid rgba(245,158,11,.3)}
-.badge.pub{background:rgba(34,197,94,.12); color:var(--accent2); border:1px solid rgba(34,197,94,.3)}
-.badge.link{border:1px solid var(--accent); color:var(--accent); padding:4px 9px; border-radius:8px; align-self:flex-start}
-.badge.link:hover{background:rgba(79,140,255,.12)}
-.enlaces{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
-.enlaces a{
-  font-size:.84rem; font-weight:600; text-decoration:none; color:#fff;
-  background:var(--accent); border-radius:9px; padding:9px 13px;
-}
-.enlaces a.alt{background:#1e2430; color:var(--tx); border:1px solid var(--line)}
-footer{text-align:center; color:var(--mut); font-size:.75rem; padding:24px}
+body{background:#0f1115;color:#e6e9ef;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:90vh;margin:0;text-align:center}
+a{color:#4f8cff}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">🧪</div>
-  <h1>finocente · <span>Laboratorio de Programación</span></h1>
-  <p>Repositorios y proyectos personales.</p>
-</header>
-
-<main>
-  <section>
-    <h2>📚 Repositorios <span class="count" id="repo-count"></span></h2>
-    <div class="grid" id="repos"></div>
-  </section>
-
-  <section>
-    <h2>🔗 Servidor maestro · datos en tiempo real</h2>
-    <div class="grid">
-      <div class="card">
-        <div class="top"><h3>♟️ webapp_redis (info64 en vivo)</h3></div>
-        <p>Servidor maestro con los torneos de ajedrez de info64.org en tiempo real. La app Android consume de aquí vía API. Requiere estar en la red Tailscale o en la misma LAN.</p>
-        <div class="enlaces">
-          <a href="http://100.118.45.14:5000">Abrir (Tailscale) ↗</a>
-          <a class="alt" href="http://192.168.1.113:5000">Abrir (LAN) ↗</a>
-        </div>
-      </div>
-      <div class="card">
-        <div class="top"><h3>📡 API para la app Android</h3></div>
-        <p>Endpoints que consume la app <code>TorneosAjedrez</code> para descargar los datos en tiempo real:</p>
-        <code>GET /tournaments<br>GET /tournaments/detail/0</code>
-        <div class="enlaces">
-          <a class="alt" href="http://100.118.45.14:5000/tournaments">Ver /tournaments ↗</a>
-        </div>
-      </div>
-      <div class="card">
-        <div class="top"><h3>🌐 Panel de servicios</h3></div>
-        <p>Acceso al resto de servicios del servidor (Home Assistant, AdGuard, MediaServer, noVNC).</p>
-        <div class="enlaces">
-          <a href="http://100.118.45.14:8080">Abrir panel ↗</a>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>finocente · laboratorio de programación</footer>
-
-<script>
-const REPOS = [
-  { name:"webapp_redis", desc:"Hub unificado: info64 en vivo + clubes con torneos locales (Flask + Redis) y todos los proyectos en apps/ (Android, apihttp, servidor, retos, rpg-futurista...).", lang:"Python", priv:true },
-  { name:"Grua", desc:"Proyecto de grúa / brazo robótico.", lang:"", priv:true },
-  { name:"compose-app", desc:"App Android con Jetpack Compose.", lang:"Kotlin", priv:false },
-  { name:"composeTermux", desc:"App Android con Compose para Termux.", lang:"Kotlin", priv:false },
-  { name:"ApiRestPython", desc:"API REST de datos HTML con Python.", lang:"", priv:true },
-  { name:"finocente.github.io", desc:"Este sitio: laboratorio de programación.", lang:"HTML", priv:false },
-  { name:"Programacion", desc:"Proyectos y ejercicios de programación.", lang:"Python", priv:true },
-  { name:"gui", desc:"Pruebas de interfaces gráficas (GUI).", lang:"", priv:true },
-  { name:"webp5", desc:"Introducción a p5.js.", lang:"Java", priv:true },
-  { name:"war", desc:"Pruebas de despliegue en Tomcat (war).", lang:"", priv:true },
-  { name:"webapp", desc:"Aplicación web.", lang:"Java", priv:true },
-];
-
-const COLORS = {
-  Python:"#3572A5", Kotlin:"#A97BFF", HTML:"#E34C26", Java:"#B07219", "": "#8b93a3"
-};
-
-const grid = document.getElementById('repos');
-let html = "";
-for (const r of REPOS) {
-  const dot = r.lang ? `<span class="dot" style="background:${COLORS[r.lang]||"#8b93a3"}"></span>` : "";
-  const lang = r.lang ? `<span class="badge lang">${dot}${r.lang}</span>` : "";
-  const vis = r.priv ? `<span class="badge priv">🔒 privado</span>` : `<span class="badge pub">public</span>`;
-  html += `
-  <a class="card" href="https://github.com/finocente/${r.name}" target="_blank" rel="noopener">
-    <div class="top"><h3>${r.name}</h3>${vis}</div>
-    <p>${r.desc}</p>
-    <div class="badges">
-      ${lang}
-      <span class="badge link">Ver en GitHub ↗</span>
-    </div>
-  </a>`;
-}
-grid.innerHTML = html;
-document.getElementById('repo-count').textContent = REPOS.length + " repos";
-</script>
+<div>
+  <p>Redirigiendo a <strong>webapp_redis</strong> (servidor maestro)...</p>
+  <p>Si no carga, prueba:
+    <a href="http://100.118.45.14:5000">Tailscale ↗</a> ·
+    <a href="http://192.168.1.113:5000">LAN ↗</a>
+  </p>
+</div>
 </body>
 </html>
