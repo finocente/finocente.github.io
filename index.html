@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>finocente · Laboratorio de Programación</title>
-<meta name="description" content="Laboratorio de programación de finocente: repositorios, apps web para probar (info64 en vivo, torneos de ajedrez) y conexión Tailscale al servidor con base de datos en tiempo real.">
+<meta name="description" content="Repositorios y proyectos de programación de finocente.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
 <style>
 :root{
@@ -19,16 +19,15 @@ body{
   min-height:100vh;
 }
 header{
-  padding:48px 20px 12px; text-align:center;
+  padding:40px 20px 12px; text-align:center;
   border-bottom:1px solid var(--line);
   background:radial-gradient(600px 200px at 50% -40px, rgba(79,140,255,.15), transparent);
 }
-header .logo{font-size:2.6rem}
-header h1{font-size:1.7rem; letter-spacing:.5px; margin-top:6px}
+header .logo{font-size:2.4rem}
+header h1{font-size:1.6rem; letter-spacing:.5px; margin-top:6px}
 header h1 span{color:var(--accent)}
-header p{color:var(--mut); margin-top:8px; font-size:.92rem; max-width:680px; margin-left:auto; margin-right:auto}
+header p{color:var(--mut); margin-top:8px; font-size:.92rem}
 main{max-width:960px; margin:0 auto; padding:28px 16px 70px}
-section{margin-top:36px}
 section h2{
   font-size:.95rem; text-transform:uppercase; letter-spacing:2px;
   color:var(--mut); margin-bottom:14px; display:flex; align-items:center; gap:8px;
@@ -47,7 +46,7 @@ section h2{
   text-decoration:none; color:inherit;
   transition:transform .15s ease, border-color .15s ease;
 }
-a.card:hover, .card.app:hover{transform:translateY(-2px); border-color:var(--accent)}
+a.card:hover{transform:translateY(-2px); border-color:var(--accent)}
 .card .top{display:flex; align-items:center; justify-content:space-between; gap:8px}
 .card h3{font-size:1rem; word-break:break-all; color:var(--tx)}
 .card p{color:var(--mut); font-size:.84rem; line-height:1.45; flex:1}
@@ -62,34 +61,14 @@ a.card:hover, .card.app:hover{transform:translateY(-2px); border-color:var(--acc
 .badge.pub{background:rgba(34,197,94,.12); color:var(--accent2); border:1px solid rgba(34,197,94,.3)}
 .badge.link{border:1px solid var(--accent); color:var(--accent); padding:4px 9px; border-radius:8px; align-self:flex-start}
 .badge.link:hover{background:rgba(79,140,255,.12)}
-.card code{
-  display:block; background:#0d1014; border:1px solid var(--line);
-  padding:8px 10px; border-radius:8px; font-size:.76rem; color:var(--accent2);
-  overflow-x:auto; font-family:'JetBrains Mono',ui-monospace,Menlo,monospace; margin:1px 0;
-}
-.card a.cta{
-  display:inline-block; text-align:center; padding:9px 12px;
-  border-radius:9px; text-decoration:none; font-weight:600; font-size:.84rem;
-  background:var(--accent); color:#fff;
-}
-.card.app{text-decoration:none}
-.card.app .links{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px}
-.card.app .links a{
-  font-size:.78rem; text-decoration:none; color:var(--accent);
-  border:1px solid var(--accent); border-radius:8px; padding:5px 10px;
-}
-.card.app .links a:hover{background:rgba(79,140,255,.12)}
 footer{text-align:center; color:var(--mut); font-size:.75rem; padding:24px}
-.note{
-  font-size:.78rem; color:var(--mut); margin-top:10px; line-height:1.5;
-}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">🧪</div>
   <h1>finocente · <span>Laboratorio de Programación</span></h1>
-  <p>Repositorios y proyectos personales. Información de mis apps y acceso para probarlas: torneos de ajedrez en vivo (info64), clubes con torneos locales y base de datos en tiempo real en mi servidor mediante Tailscale.</p>
+  <p>Repositorios y proyectos personales.</p>
 </header>
 
 <main>
@@ -97,87 +76,13 @@ footer{text-align:center; color:var(--mut); font-size:.75rem; padding:24px}
     <h2>📚 Repositorios <span class="count" id="repo-count"></span></h2>
     <div class="grid" id="repos"></div>
   </section>
-
-  <section>
-    <h2>🌐 Apps web para probar</h2>
-    <div class="grid">
-      <div class="card app">
-        <div class="top"><h3>♟️ Torneos en vivo · info64</h3><span class="badge lang">Flask + Redis</span></div>
-        <p>Seguimiento en <strong>tiempo real</strong> de torneos de ajedrez de info64.org: portada con torneos jugando, secciones (clasificación, crosstable, schedule, partidas), calendario y buscador de jugadores. Actualización por <em>Server-Sent Events</em> cuando cambia algo.</p>
-        <p>Se ejecuta en Termux con Flask + Redis. En tu red Tailscale o LAN del servidor:</p>
-        <div class="links">
-          <a href="http://100.118.45.14:5000">Abrir vía Tailscale ↗</a>
-          <a href="http://192.168.1.113:5000">Abrir en LAN ↗</a>
-        </div>
-      </div>
-      <div class="card app">
-        <div class="top"><h3>🏆 Clubes y torneos locales</h3><span class="badge lang">Motor suizo</span></div>
-        <p>Clubes de ajedrez con jugadores (ELO/FIDE/título), aviso de nombres parecidos, y <strong>torneos locales suizos</strong>: inscripciones, emparejamientos por rondas, resultados, desempates Buchholz, clasificación y crosstable. Misma API que info64 con fallback local.</p>
-        <p>Cuentas con verificación de dispositivo (máx. 3) y captcha de ajedrez.</p>
-        <div class="links">
-          <a href="http://100.118.45.14:5000">Probar (Tailscale) ↗</a>
-          <a href="https://github.com/finocente/webapp_redis">Código fuente ↗</a>
-        </div>
-      </div>
-      <div class="card app">
-        <div class="top"><h3>📡 Tiempo real por SSE</h3><span class="badge lang">Redis pub/sub</span></div>
-        <p>Eventos en vivo con <code>Server-Sent Events</code>: <code>/stream</code>, <code>/stream/calendario</code>, <code>/stream/cliente</code> y <code>/stream/perfil</code>. Publicación en canales con Redis streams y suscripción.</p>
-        <code>curl -N http://100.118.45.14:5000/stream</code>
-      </div>
-      <div class="card app">
-        <div class="top"><h3>🚀 Ejecutar la web en Termux</h3><span class="badge lang">miservidor</span></div>
-        <p>La web corre en Termux con <code>./webapp.sh start</code> (arranca Redis + Flask). Todo queda en <code>~proyectos/webapp_redis</code>:</p>
-        <code>./webapp.sh start<br>curl http://localhost:5000</code>
-        <p class="note">En el servidor también hay un panel de servicios (nginx) con Home Assistant, AdGuard, MediaServer y noVNC.</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>🔗 Tailscale · Conexión al servidor</h2>
-    <div class="grid">
-      <div class="card">
-        <div class="top"><h3>🎲 Base de datos en tiempo real</h3></div>
-        <p>Usa el servidor <code>miservidor</code> como <strong>base de datos en tiempo real (Redis)</strong> desde tus apps de GitHub. Con Tailscale instalado, apunta tus apps a esta dirección:</p>
-        <code>redis://100.118.45.14:6379</code>
-        <a class="cta" href="https://tailscale.com/download">Instalar Tailscale ↗</a>
-      </div>
-      <div class="card">
-        <div class="top"><h3>🌐 Panel de Servicios</h3></div>
-        <p>Acceso central al servidor <code>miservidor</code> con Home Assistant, AdGuard, MediaServer y noVNC. Accesible desde cualquier sitio vía la red Tailscale.</p>
-        <a class="badge link" href="http://100.118.45.14:8080">Abrir panel ↗</a>
-      </div>
-      <div class="card">
-        <div class="top"><h3>💻 Acceso por SSH</h3></div>
-        <p>Terminal directa al servidor Debian <code>miservidor</code> estés donde estés, dentro de la red Tailscale.</p>
-        <code>ssh root@100.118.45.14</code>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>⚡ Cómo conectar desde una app</h2>
-    <div class="grid">
-      <div class="card">
-        <div class="top"><h3>📲 Cliente</h3></div>
-        <p>Instala Tailscale en tu móvil, PC o Termux e inicia sesión con tu cuenta. Ya verás el nodo <code>miservidor</code> (100.118.45.14) en tu red.</p>
-        <code>tailscale up</code>
-      </div>
-      <div class="card">
-        <div class="top"><h3>🐍 Ejemplo Python</h3></div>
-        <p>Conecta a la base de datos en tiempo real desde tu app o script:</p>
-        <code>import redis<br>r = redis.Redis(host="100.118.45.14", port=6379)<br>r.set("hola", "mundo")</code>
-      </div>
-    </div>
-  </section>
 </main>
 
-<footer>finocente · laboratorio de programación · servido desde GitHub Pages</footer>
+<footer>finocente · laboratorio de programación</footer>
 
 <script>
 const REPOS = [
   { name:"webapp_redis", desc:"Web en vivo: torneos de ajedrez de info64.org + clubes con torneos locales suizos. Flask + Redis en Termux.", lang:"Python", priv:true },
-  { name:"APIHTTP-MQTT-ANDROID", desc:"App Android que integra comunicación HTTP y MQTT para IoT.", lang:"Python", priv:false },
   { name:"Grua", desc:"Proyecto de grúa / brazo robótico.", lang:"", priv:true },
   { name:"compose-app", desc:"App Android con Jetpack Compose.", lang:"Kotlin", priv:false },
   { name:"composeTermux", desc:"App Android con Compose para Termux.", lang:"Kotlin", priv:false },
