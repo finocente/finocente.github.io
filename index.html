@@ -19,7 +19,6 @@ a{color:#4f8cff}
   <p>Redirigiendo a <strong>webapp_redis</strong> (servidor maestro)…</p>
   <p class="estado" id="estado">Buscando la URL actual por MQTT…</p>
   <p class="estado">Si no carga, prueba:
-    <a id="ngrok" href="#">ngrok ↗</a> ·
     <a id="funnel" href="#">Funnel ↗</a> ·
     <a id="lan" href="#">LAN ↗</a>
   </p>
@@ -32,10 +31,9 @@ var PUERTO_WSS = 8084;
 var SEG = 30;
 var ESPERA_MAX = 9000;
 var CONOCIDAS = [
-  "https://7141-109-227-142-196.ngrok-free.app/",
   "https://uefi-x86.tail11334a.ts.net/"
 ];
-var LAN = "http://192.168.1.113:5000";
+var LAN = "http://192.168.1.103:5000";
 
 var mejorUrl = null;
 var mejorTs = 0;
@@ -106,8 +104,7 @@ function arrancar() {
   setTimeout(decidir, ESPERA_MAX);
 }
 
-document.getElementById("ngrok").href = CONOCIDAS[0];
-document.getElementById("funnel").href = CONOCIDAS[1];
+document.getElementById("funnel").href = CONOCIDAS[0];
 document.getElementById("lan").href = LAN;
 cargarMqtt();
 </script>
