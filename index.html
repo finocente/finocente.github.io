@@ -2,11 +2,108 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=https://miservidor.tail11334a.ts.net/">
-  <link rel="canonical" href="https://miservidor.tail11334a.ts.net/">
-  <title>Redirigiendo...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redirigiendo…</title>
+  <style>
+    body{background:#0b1220;color:#e5e7eb;font:600 16px/1.5 system-ui,sans-serif;min-height:100vh;margin:0;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;text-align:center;padding:24px}
+    a{color:#60a5fa}
+    .estado{color:#94a3b8;font-size:13px;font-weight:400}
+    .spin{width:26px;height:26px;border:3px solid #1e293b;border-top-color:#2563eb;border-radius:50%;animation:girar .8s linear infinite}
+    @keyframes girar{to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body>
-  <p>Redirigiendo a <a href="https://miservidor.tail11334a.ts.net/">https://miservidor.tail11334a.ts.net/</a></p>
+  <div class="spin"></div>
+  <p>Buscando el servidor por MQTT…</p>
+  <p class="estado" id="estado"></p>
+  <p class="estado">Si no responde, haz clic en <a id="enlace">la última URL conocida</a>.</p>
+
+  <script>
+    var TOPIC = "redajedrez/url";
+    var BROKER = "broker.emqx.io";
+    var PUERTO_WSS = 8084;
+    var SEG = 30;
+    var ESPERA_MAX = 9000;
+    var CONOCIDAS = [
+      "https://uefi-x86.tail11334a.ts.net/",
+      "https://miservidor.tail11334a.ts.net/"
+    ];
+
+    var mejorUrl = null;
+    var mejorTs = 0;
+    var estadoEl = document.getElementById("estado");
+    var enlaceEl = document.getElementById("enlace");
+
+    function estado(txt) { if (estadoEl) estadoEl.textContent = txt; }
+
+    function fresca(m) {
+      var ahora = Math.floor(Date.now() / 1000);
+      return m && m.tipo === "url" && m.url && Math.abs(ahora - (m.ts || 0)) < 2 * SEG;
+    }
+
+    function ir(url) {
+      if (!url) return;
+      document.body.innerHTML =
+        "<p>Redirigiendo a <a href=\"" + url + "\">" + url + "</a>…</p>";
+      location.replace(url);
+    }
+
+    function decidir() {
+      if (mejorUrl) return ir(mejorUrl);
+      estado("MQTT sin señal; usando URL conocida…");
+      for (var i = 0; i < CONOCIDAS.length; i++) {
+        ir(CONOCIDAS[i]);
+      }
+    }
+
+    function cargarMqtt() {
+      var fuentes = [
+        "https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js",
+        "https://unpkg.com/mqtt@5/dist/mqtt.min.js"
+      ];
+      var i = 0;
+      function intentar() {
+        if (i >= fuentes.length) return decidir();
+        var s = document.createElement("script");
+        s.src = fuentes[i++];
+        s.onload = function () { if (window.mqtt) arrancar(); else intentar(); };
+        s.onerror = intentar;
+        document.head.appendChild(s);
+      }
+      intentar();
+    }
+
+    function arrancar() {
+      estado("Conectando a MQTT (" + BROKER + ":" + PUERTO_WSS + ")…");
+      var cliente;
+      try {
+        cliente = mqtt.connect("wss://" + BROKER + ":" + PUERTO_WSS + "/mqtt", {
+          keepalive: 30,
+          reconnectPeriod: 3000,
+          clean: true
+        });
+      } catch (e) {
+        return decidir();
+      }
+      cliente.on("connect", function () { cliente.subscribe(TOPIC); });
+      cliente.on("message", function (topic, payload) {
+        try {
+          var m = JSON.parse(payload.toString());
+          if (fresca(m) && (m.ts || 0) >= mejorTs) {
+            mejorTs = m.ts;
+            mejorUrl = m.url;
+            estado("Servidor encontrado por MQTT: " + m.url);
+          }
+        } catch (e) { /* ignorar */ }
+      });
+      cliente.on("error", function (e) {
+        estado("Error MQTT: " + (e && e.message ? e.message : e) + ". Usando URL conocida…");
+      });
+      setTimeout(decidir, ESPERA_MAX);
+    }
+
+    enlaceEl.href = CONOCIDAS[0];
+    cargarMqtt();
+  </script>
 </body>
 </html>
