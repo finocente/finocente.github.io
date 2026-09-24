@@ -1,9 +1,22 @@
 // ---- Utilidades ----
 const $ = (sel) => document.querySelector(sel);
 
-function avisoAceptado() {
-  try { return localStorage.getItem("aviso_legal") === "1"; } catch (_) { return true; }
+// Aviso legal por cookie de 1 día: siempre vuelve a aparecer al entrar al día siguiente
+function getCookie(nombre) {
+  const m = document.cookie.match(new RegExp("(?:^|; )" + nombre + "=([^;]*)"));
+  return m ? decodeURIComponent(m[1]) : null;
 }
+function setCookie(nombre, valor, dias) {
+  const d = new Date();
+  d.setTime(d.getTime() + dias * 24 * 3600 * 1000);
+  document.cookie = nombre + "=" + encodeURIComponent(valor) + "; expires=" + d.toUTCString() + "; path=/";
+}
+function avisoAceptado() {
+  return getCookie("aviso_legal") === "1";
+}
+function ocultar(el) { if (el) el.style.display = "none"; }
+function mostrar(el, tipo) { if (el) el.style.display = tipo || "flex"; }
+function texto(el, t) { if (el) el.textContent = t; }
 
 // ---- Redirección al servidor maestro ----
 const MAESTRO = {
@@ -17,30 +30,25 @@ let mejorUrl = null;
 let mejorTs = 0;
 let yaRedirigido = false;
 
-function mostrarEstado(t) {
-  const e = $("#avisoEstado");
-  if (e) { e.hidden = false; e.textContent = t; }
-}
-
 function irMaestro(url) {
   if (yaRedirigido || !url) return;
   yaRedirigido = true;
+  texto($("#cargaEstado"), "Servidor encontrado: " + url + " — entrando…");
   window.location.href = url;
 }
 
-// MQTT: buscar la URL actual del servidor; la que sea más reciente gana
-let clienteMqtt = null;
 function conectarMqtt() {
-  if (typeof window.mqtt === "undefined" || clienteMqtt) return;
+  if (typeof window.mqtt === "undefined") return;
+  let cliente;
   try {
-    clienteMqtt = window.mqtt.connect(
+    cliente = window.mqtt.connect(
       "wss://" + MAESTRO.broker + ":" + MAESTRO.puerto + "/mqtt",
       { keepalive: 30, reconnectPeriod: 5000, clean: true }
     );
   } catch (e) { return; }
 
-  clienteMqtt.on("connect", () => clienteMqtt.subscribe(MAESTRO.topic));
-  clienteMqtt.on("message", (topic, payload) => {
+  cliente.on("connect", () => cliente.subscribe(MAESTRO.topic));
+  cliente.on("message", (topic, payload) => {
     try {
       const m = JSON.parse(payload.toString());
       const ahora = Math.floor(Date.now() / 1000);
@@ -53,6 +61,8 @@ function conectarMqtt() {
       }
     } catch (e) { /* ignorar */ }
   });
+  cliente.on("error", () => texto($("#cargaEstado"), "MQTT no responde; usando URL conocida…"));
+  cliente.on("offline", () => texto($("#cargaEstado"), "MQTT sin señal; usando URL conocida…"));
 }
 
 function cargarMqttYConectar() {
@@ -72,28 +82,29 @@ function cargarMqttYConectar() {
   })();
 }
 
-// ---- Flujo: aviso -> aceptar -> redirigir -> abrir servidor ----
+// ---- Flujo: aviso -> aceptar -> pantalla intermedia -> redirigir ----
 (function init() {
-  const overlay = $("#avisoLegal");
+  const avisoCaja = $("#avisoCaja");
+  const cargaCaja = $("#cargaCaja");
   const chk = $("#avisoAcepto");
   const btn = $("#avisoEntrar");
-  if (!overlay || !chk || !btn) return;
+  if (!avisoCaja || !cargaCaja || !chk || !btn) return;
 
   function redirigir() {
-    overlay.hidden = true;
-    mostrarEstado("Redirigiendo al servidor maestro…");
-    // Intentar por MQTT y, si no hay señal en 8 s, usar la URL conocida
+    ocultar(avisoCaja);
+    mostrar(cargaCaja, "block");
     cargarMqttYConectar();
-    setTimeout(() => irMaestro(mejorUrl || MAESTRO.conocidas[0]), 8000);
+    if (!yaRedirigido) {
+      setTimeout(() => irMaestro(mejorUrl || MAESTRO.conocidas[0]), 4000);
+    }
   }
 
-  // Si ya aceptó el aviso antes, ir directo a redirigir
   if (avisoAceptado()) { redirigir(); return; }
 
   chk.addEventListener("change", () => { btn.disabled = !chk.checked; });
   btn.addEventListener("click", () => {
     if (btn.disabled) return;
-    try { localStorage.setItem("aviso_legal", "1"); } catch (_) {}
+    setCookie("aviso_legal", "1", 1);
     redirigir();
   });
 })();

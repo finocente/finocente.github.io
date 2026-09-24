@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="aviso-overlay" id="avisoLegal">
-    <div class="aviso-caja">
+    <div class="aviso-caja" id="avisoCaja">
       <div class="aviso-head">
         <div class="aviso-icon">♞</div>
         <div>
@@ -49,6 +49,16 @@
         </button>
       </div>
       <p class="aviso-estado" id="avisoEstado" hidden></p>
+    </div>
+
+    <!-- Pantalla intermedia: conectando al servidor maestro -->
+    <div class="carga-caja" id="cargaCaja" style="display:none">
+      <div class="carga-spin" aria-hidden="true"></div>
+      <h2>Conectando al servidor maestro…</h2>
+      <p class="aviso-estado" id="cargaEstado">Localizando la URL más reciente del servidor por MQTT…</p>
+      <a class="carga-link" id="cargaLink" href="https://uefi-x86.tail11334a.ts.net/" target="_blank" rel="noreferrer">
+        ¿Tarda? Abre el servidor directamente ↗
+      </a>
     </div>
   </div>
 
