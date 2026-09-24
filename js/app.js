@@ -3,7 +3,7 @@ let sidebarHidden = false;
 
 const $ = (sel) => document.querySelector(sel);
 
-// ---- Aviso legal: antes de usar la app ----
+// ---- Aviso legal: antes de entrar ----
 function avisoAceptado() {
   try { return localStorage.getItem("aviso_legal") === "1"; } catch (_) { return true; }
 }
@@ -13,18 +13,87 @@ function bloquearApp(bloquear) {
     if (el) el.style.pointerEvents = bloquear ? "none" : "";
   });
 }
+function mostrarEstado(t) {
+  const e = $("#avisoEstado");
+  if (e) { e.hidden = false; e.textContent = t; }
+}
+
+// ---- Conexión al servidor maestro (MQTT + fallback) ----
+const MAESTRO = {
+  topic: "redajedrez/url",
+  broker: "broker.emqx.io",
+  puerto: 8084,
+  seg: 30,
+  espera: 9000,
+  conocidas: ["https://uefi-x86.tail11334a.ts.net/"],
+  lan: "http://192.168.1.103:5000",
+};
+let mejorUrl = null, mejorTs = 0;
+
+function irMaestro(url) {
+  if (!url) return;
+  location.replace(url);
+}
+function decidirMaestro() {
+  irMaestro(mejorUrl || MAESTRO.conocidas[0]);
+}
+function conectarMaestro() {
+  mostrarEstado("Buscando la URL actual del servidor maestro por MQTT…");
+  const fuentes = [
+    "https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js",
+    "https://unpkg.com/mqtt@5/dist/mqtt.min.js",
+  ];
+  let i = 0;
+  function intentarCarga() {
+    if (i >= fuentes.length) { mostrarEstado("Sin MQTT; usando URL conocida…"); return decidirMaestro(); }
+    const s = document.createElement("script");
+    s.src = fuentes[i++];
+    s.onload = () => { window.mqtt ? arrancarMqtt() : intentarCarga(); };
+    s.onerror = intentarCarga;
+    document.head.appendChild(s);
+  }
+  function arrancarMqtt() {
+    let cliente;
+    try {
+      cliente = window.mqtt.connect("wss://" + MAESTRO.broker + ":" + MAESTRO.puerto + "/mqtt", {
+        keepalive: 30, reconnectPeriod: 3000, clean: true,
+      });
+    } catch (e) { return decidirMaestro(); }
+    cliente.on("connect", () => cliente.subscribe(MAESTRO.topic));
+    cliente.on("message", (topic, payload) => {
+      try {
+        const m = JSON.parse(payload.toString());
+        const ahora = Math.floor(Date.now() / 1000);
+        if (m && m.tipo === "url" && m.url && Math.abs(ahora - (m.ts || 0)) < 2 * MAESTRO.seg && (m.ts || 0) >= mejorTs) {
+          mejorTs = m.ts;
+          mejorUrl = m.url;
+          mostrarEstado("Servidor encontrado: " + m.url + " — conectando…");
+        }
+      } catch (e) { /* ignorar */ }
+    });
+    cliente.on("error", () => mostrarEstado("Error MQTT; usando URL conocida…"));
+    setTimeout(decidirMaestro, MAESTRO.espera);
+  }
+  intentarCarga();
+}
+
 (function initAviso() {
   const overlay = $("#avisoLegal");
   const chk = $("#avisoAcepto");
   const btn = $("#avisoEntrar");
+  const demo = $("#avisoDemo");
   if (!overlay || !chk || !btn) return;
-  if (avisoAceptado()) {
-    overlay.hidden = true;
-    return;
-  }
+  if (avisoAceptado()) { overlay.hidden = true; return; }
   bloquearApp(true);
   chk.addEventListener("change", () => { btn.disabled = !chk.checked; });
   btn.addEventListener("click", () => {
+    if (btn.disabled) return;
+    try { localStorage.setItem("aviso_legal", "1"); } catch (_) {}
+    btn.disabled = true;
+    btn.textContent = "🔗 Conectando…";
+    conectarMaestro();
+  });
+  if (demo) demo.addEventListener("click", () => {
     try { localStorage.setItem("aviso_legal", "1"); } catch (_) {}
     overlay.hidden = true;
     bloquearApp(false);

@@ -104,30 +104,50 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <!-- Aviso legal: aparece al cargar antes de entrar -->
+  <!-- Aviso legal: antes de entrar al servidor maestro -->
   <div class="aviso-overlay" id="avisoLegal">
     <div class="aviso-caja">
-      <h2>⚖️ Términos y aviso legal</h2>
-      <p>
-        Los datos que se muestran (jugadores, torneos, clasificaciones, ELO,
-        federaciones, FIDE ID y equipos) son <b>públicos</b> y proceden de las
-        webs oficiales <a href="https://info64.org" target="_blank" rel="noreferrer">info64.org</a> y
-        <a href="https://fide.com" target="_blank" rel="noreferrer">fide.com</a>.
-        Se usan solo con fines informativos y de seguimiento deportivo, sin
-        suplantar ni atribuirse identidades ajenas.
-      </p>
-      <p>
-        Cuando se conecta al servidor maestro, tu navegador <b>coopera descargando
-        datos de rondas</b> de otros torneos (uso del tráfico de tu conexión) mientras
-        tienes la página abierta. No se envían datos personales tuyos a info64.
-      </p>
+      <div class="aviso-head">
+        <div class="aviso-icon">♞</div>
+        <div>
+          <h2>Bienvenido a Red Ajedrez</h2>
+          <p class="aviso-sub">Resultados y seguimiento de torneos de ajedrez en directo</p>
+        </div>
+      </div>
+
+      <div class="aviso-bloque">
+        <h4>📊 Datos públicos</h4>
+        <p>
+          Los datos mostrados (jugadores, torneos, clasificaciones, ELO, federaciones,
+          FIDE ID y equipos) son <b>públicos</b> y proceden de las webs oficiales
+          <a href="https://info64.org" target="_blank" rel="noreferrer">info64.org</a> y
+          <a href="https://fide.com" target="_blank" rel="noreferrer">fide.com</a>.
+          Se usan solo con fines informativos y de seguimiento deportivo, sin suplantar
+          ni atribuirse identidades ajenas.
+        </p>
+      </div>
+
+      <div class="aviso-bloque">
+        <h4>🌐 Tráfico cooperativo</h4>
+        <p>
+          Al acceder al servidor maestro, tu navegador <b>colabora descargando datos de
+          rondas</b> de otros torneos (uso del tráfico de tu conexión) mientras la página
+          está abierta. No enviamos datos personales tuyos a info64.
+        </p>
+      </div>
+
       <label class="aviso-check">
         <input type="checkbox" id="avisoAcepto" />
-        <span>Acepto los términos y acepto el uso de tráfico para la carga cooperativa de rondas.</span>
+        <span>He leído y acepto los términos y el uso de tráfico para la carga cooperativa de rondas.</span>
       </label>
-      <div class="modal-actions">
-        <button class="primary" id="avisoEntrar" disabled>Entrar y aceptar</button>
+
+      <div class="aviso-acciones">
+        <button class="primary aviso-entrar" id="avisoEntrar" disabled>
+          🔗 Entrar al servidor maestro
+        </button>
+        <button class="ghost" id="avisoDemo">Ver demo sin conexión</button>
       </div>
+      <p class="aviso-estado" id="avisoEstado" hidden></p>
     </div>
   </div>
 
