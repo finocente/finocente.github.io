@@ -1,112 +1,137 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>finocente · redirigiendo a webapp_redis</title>
-<style>
-body{background:#0f1115;color:#e6e9ef;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:90vh;margin:0;text-align:center;padding:20px}
-div{max-width:600px}
-a{color:#4f8cff}
-.estado{color:#8b93a7;font-size:14px;margin-top:14px}
-.spin{width:26px;height:26px;border:3px solid #1e293b;border-top-color:#4f8cff;border-radius:50%;margin:0 auto 12px;animation:girar .8s linear infinite}
-@keyframes girar{to{transform:rotate(360deg)}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Red Ajedrez · Gestión de Torneos en Directo</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-<div>
-  <div class="spin"></div>
-  <p>Redirigiendo a <strong>webapp_redis</strong> (servidor maestro)…</p>
-  <p class="estado" id="estado">Buscando la URL actual por MQTT…</p>
-  <p class="estado">Si no carga, prueba:
-    <a id="funnel" href="#">Funnel ↗</a> ·
-    <a id="lan" href="#">LAN ↗</a>
-  </p>
-</div>
+  <!-- Lateral izquierdo: se oculta a la izquierda -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="brand">♞ Red Ajedrez</span>
+      <button class="icon-btn" id="sidebarToggle" title="Ocultar panel" aria-label="Ocultar panel">«</button>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="side-btn active" data-view="mapa">🗺️ Mapa</button>
+      <button class="side-btn" data-view="lista">📋 Lista torneos</button>
+    </nav>
+    <div class="sidebar-view" id="sidebarView"></div>
+  </aside>
 
-<script>
-var TOPIC = "redajedrez/url";
-var BROKER = "broker.emqx.io";
-var PUERTO_WSS = 8084;
-var SEG = 30;
-var ESPERA_MAX = 9000;
-var CONOCIDAS = [
-  "https://uefi-x86.tail11334a.ts.net/"
-];
-var LAN = "http://192.168.1.103:5000";
+  <button class="sidebar-reopen" id="sidebarReopen" title="Abrir panel" aria-label="Abrir panel">»</button>
 
-var mejorUrl = null;
-var mejorTs = 0;
-var estadoEl = document.getElementById("estado");
+  <!-- Menú derecho -->
+  <header class="topbar">
+    <div class="topbar-title" id="topbarTitle">🏆 Torneo Internacional de Ajedrez 2026</div>
+    <nav class="right-menu">
+      <button class="menu-btn" id="btnAdmin">⚙️ Admin</button>
+      <button class="menu-btn" id="btnLogin">🔑 Login</button>
+      <button class="menu-btn" id="btnFeedback">💬 Feedback</button>
+    </nav>
+  </header>
 
-function estado(t) { if (estadoEl) estadoEl.textContent = t; }
+  <main class="main">
+    <!-- Ronda actual -->
+    <section class="card round-card">
+      <div class="round-header">
+        <div>
+          <h2 id="roundTitle" class="round-title">Ronda actual</h2>
+          <p class="muted" id="roundMeta">Ronda 5 de 9 · Blitz 5+3</p>
+        </div>
+        <div class="round-status">
+          <span class="badge live">● En juego</span>
+          <span class="clock" id="roundClock">01:12:45</span>
+        </div>
+      </div>
+    </section>
 
-function fresca(m) {
-  var ahora = Math.floor(Date.now() / 1000);
-  return m && m.tipo === "url" && m.url && Math.abs(ahora - (m.ts || 0)) < 2 * SEG;
-}
+    <div class="grid-2">
+      <!-- Calendario -->
+      <section class="card">
+        <h3>📅 Calendario del torneo</h3>
+        <div class="calendar" id="calendar"></div>
+        <ul class="schedule" id="schedule"></ul>
+      </section>
 
-function ir(url) {
-  if (!url) return;
-  document.body.innerHTML = "<p>Redirigiendo a <a href=\"" + url + "\">" + url + "</a>…</p>";
-  location.replace(url);
-}
+      <!-- Mesas de la ronda -->
+      <section class="card">
+        <h3>♟️ Mesas — ronda actual</h3>
+        <div class="boards" id="boards"></div>
+      </section>
+    </div>
 
-function decidir() {
-  if (mejorUrl) return ir(mejorUrl);
-  estado("MQTT sin señal; usando URL conocida…");
-  ir(CONOCIDAS[0]);
-}
+    <footer class="foot">
+      <span class="muted">Datos de demostración · </span>
+      <a id="linkMaestro" href="#" target="_blank">Servidor maestro (webapp_redis) ↗</a>
+    </footer>
+  </main>
 
-function cargarMqtt() {
-  var fuentes = [
-    "https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js",
-    "https://unpkg.com/mqtt@5/dist/mqtt.min.js"
-  ];
-  var i = 0;
-  function intentar() {
-    if (i >= fuentes.length) return decidir();
-    var s = document.createElement("script");
-    s.src = fuentes[i++];
-    s.onload = function () { if (window.mqtt) arrancar(); else intentar(); };
-    s.onerror = intentar;
-    document.head.appendChild(s);
-  }
-  intentar();
-}
+  <!-- Modales -->
+  <dialog id="dlgLogin">
+    <form method="dialog" class="modal">
+      <h3>Login</h3>
+      <label>Usuario <input type="text" placeholder="usuario" /></label>
+      <label>Contraseña <input type="password" placeholder="••••••••" /></label>
+      <div class="modal-actions">
+        <button value="cancel" class="ghost">Cancelar</button>
+        <button value="ok" class="primary">Entrar</button>
+      </div>
+    </form>
+  </dialog>
 
-function arrancar() {
-  estado("Conectando a MQTT (" + BROKER + ":" + PUERTO_WSS + ")…");
-  var cliente;
-  try {
-    cliente = mqtt.connect("wss://" + BROKER + ":" + PUERTO_WSS + "/mqtt", {
-      keepalive: 30,
-      reconnectPeriod: 3000,
-      clean: true
-    });
-  } catch (e) {
-    return decidir();
-  }
-  cliente.on("connect", function () { cliente.subscribe(TOPIC); });
-  cliente.on("message", function (topic, payload) {
-    try {
-      var m = JSON.parse(payload.toString());
-      if (fresca(m) && (m.ts || 0) >= mejorTs) {
-        mejorTs = m.ts;
-        mejorUrl = m.url;
-        estado("Servidor encontrado por MQTT: " + m.url);
-      }
-    } catch (e) { /* ignorar */ }
-  });
-  cliente.on("error", function (e) {
-    estado("Error MQTT, usando URL conocida…");
-  });
-  setTimeout(decidir, ESPERA_MAX);
-}
+  <dialog id="dlgFeedback">
+    <form method="dialog" class="modal">
+      <h3>Feedback</h3>
+      <label>Mensaje <textarea rows="4" placeholder="Cuéntanos qué mejorar..."></textarea></label>
+      <div class="modal-actions">
+        <button value="cancel" class="ghost">Cancelar</button>
+        <button value="ok" class="primary">Enviar</button>
+      </div>
+    </form>
+  </dialog>
 
-document.getElementById("funnel").href = CONOCIDAS[0];
-document.getElementById("lan").href = LAN;
-cargarMqtt();
-</script>
+  <dialog id="dlgAdmin">
+    <form method="dialog" class="modal">
+      <h3>Admin</h3>
+      <p class="muted">Zona de administración (pendiente de acceso).</p>
+      <div class="modal-actions">
+        <button value="ok" class="primary">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- Aviso legal: aparece al cargar antes de entrar -->
+  <div class="aviso-overlay" id="avisoLegal">
+    <div class="aviso-caja">
+      <h2>⚖️ Términos y aviso legal</h2>
+      <p>
+        Los datos que se muestran (jugadores, torneos, clasificaciones, ELO,
+        federaciones, FIDE ID y equipos) son <b>públicos</b> y proceden de las
+        webs oficiales <a href="https://info64.org" target="_blank" rel="noreferrer">info64.org</a> y
+        <a href="https://fide.com" target="_blank" rel="noreferrer">fide.com</a>.
+        Se usan solo con fines informativos y de seguimiento deportivo, sin
+        suplantar ni atribuirse identidades ajenas.
+      </p>
+      <p>
+        Cuando se conecta al servidor maestro, tu navegador <b>coopera descargando
+        datos de rondas</b> de otros torneos (uso del tráfico de tu conexión) mientras
+        tienes la página abierta. No se envían datos personales tuyos a info64.
+      </p>
+      <label class="aviso-check">
+        <input type="checkbox" id="avisoAcepto" />
+        <span>Acepto los términos y acepto el uso de tráfico para la carga cooperativa de rondas.</span>
+      </label>
+      <div class="modal-actions">
+        <button class="primary" id="avisoEntrar" disabled>Entrar y aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
